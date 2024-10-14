@@ -39,14 +39,16 @@ service on new kafka:Listener(kafkaEndpoint, consumerConfigs) {
             topic: new_delivery_request,
             value: new_package.toJsonString()
         });
-        io:println("Submitted package delivery request!");
+        io:println("Submitted the package delivery request!!");
+
     }
 
     remote function onConsumerRecord(Delivery[] deliveries) returns error? {
-        io:println("Delivery Schedule:");
+        io:println("The Delivery Schedule:");
         from Delivery delivery in deliveries
         do {
             io:println(delivery);
         };
     }
 } 
+
