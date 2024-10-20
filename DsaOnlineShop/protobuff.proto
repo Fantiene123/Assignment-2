@@ -1,0 +1,92 @@
+syntax = "proto3";
+  
+package shopping;
+//implementing the service
+service ShoppingService {
+    rpc AddProduct (Product) returns (ProductResponse) {}
+    rpc CreateUsers (stream User) returns (UsersResponse) {}
+    rpc UpdateProduct (UpdateProductRequest) returns (ProductResponse) {}
+    rpc RemoveProduct (RemoveProductRequest) returns (ProductListResponse) {}
+    rpc ListAvailableProducts (Empty) returns (ProductListResponse) {}
+    rpc SearchProduct (SearchProductRequest) returns (ProductResponse) {}
+    rpc AddToCart (AddToCartRequest) returns (CartResponse) {}
+    rpc PlaceOrder (PlaceOrderRequest) returns (OrderResponse) {}
+}
+
+message Empty {}
+
+message Product {
+    string name = 1;
+    string description = 2;
+    float price = 3;
+    int32 stock_quantity = 4;
+    string sku = 5;
+    ProductStatus status = 6;
+}
+
+enum ProductStatus {
+    AVAILABLE = 0;
+    OUT_OF_STOCK = 1;
+}
+
+message User {
+    string user_id = 1;
+    string name = 2;
+    UserType type = 3;
+}
+
+enum UserType {
+    CUSTOMER = 0;
+    ADMIN = 1;
+}
+
+message ProductResponse {
+    string sku = 1;
+    Product product = 2;
+}
+
+message UsersResponse {
+    int32 created_count = 1;
+}
+
+message UpdateProductRequest {
+    string sku = 1;
+    Product product = 2;
+}
+
+message RemoveProductRequest {
+    string sku = 1;
+}
+
+message ProductListResponse {
+    repeated Product products = 1;
+}
+
+message SearchProductRequest {
+    string sku = 1;
+}
+
+message AddToCartRequest {
+    string user_id = 1;
+    string sku = 2;
+    int32 quantity = 3;
+}
+
+message CartResponse {
+    repeated CartItem items = 1;
+}
+
+message CartItem {
+    string sku = 1;
+    int32 quantity = 2;
+}
+
+message PlaceOrderRequest {
+    string user_id = 1;
+}
+
+message OrderResponse {
+    string order_id = 1;
+    repeated CartItem items = 2;
+    float total_price = 3;
+}

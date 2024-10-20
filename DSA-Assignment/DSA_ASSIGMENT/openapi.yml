@@ -1,0 +1,191 @@
+openapi: 3.0.0
+info:
+  title: Programme Development Unit API
+  description: A RESTful API for managing Programme development and review workflow at Namibia University of Science and Technology.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/programmes
+    description: Production server
+paths:
+  /programmes:
+    post:
+      summary: Add a new programme
+      description: Create a new programme record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgrammeInput'
+      responses:
+        '201':
+          description: Programme created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Programme'
+        '400':
+          description: Invalid input
+    get:
+      summary: Retrieve all programmes
+      description: Get a list of all programmes within the Programme Development Unit.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  programmes:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/Programme'
+  /programmes/{programmeCode}:
+    get:
+      summary: Get a programme by code
+      description: Retrieve a programme by its programme code.
+      parameters:
+        - in: path
+          name: programmeCode
+          schema:
+            type: string
+          required: true
+          description: The programme code
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Programme'
+        '404':
+          description: Programme not found
+    put:
+      summary: Update a programme
+      description: Update an existing programme's information by its programme code.
+      parameters:
+        - in: path
+          name: programmeCode
+          schema:
+            type: string
+          required: true
+          description: The programme code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgrammeInput'
+      responses:
+        '200':
+          description: Programme updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Programme'
+        '404':
+          description: Programme not found
+    delete:
+      summary: Delete a programme
+      description: Delete a programme record by its programme code.
+      parameters:
+        - in: path
+          name: programmeCode
+          schema:
+            type: string
+          required: true
+          description: The programme code
+      responses:
+        '204':
+          description: Programme deleted successfully
+        '404':
+          description: Programme not found
+  /programmes/due-for-review:
+    get:
+      summary: Get programmes due for review
+      description: Retrieve all programmes that are due for review (5 years after registration).
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  programmes:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/Programme'
+  /programmes/by-faculty/{facultyName}:
+    get:
+      summary: Get programmes by faculty
+      description: Retrieve all programmes that belong to the specified faculty.
+      parameters:
+        - in: path
+          name: facultyName
+          schema:
+            type: string
+          required: true
+          description: The name of the faculty
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  programmes:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/Programme'
+        '404':
+          description: Faculty not found
+
+components:
+  schemas:
+    ProgrammeInput:
+      type: object
+      required:
+        - programmeCode
+        - nqfLevel
+        - facultyName
+        - departmentName
+        - qualificationTitle
+        - registrationDate
+        - courses
+      properties:
+        programmeCode:
+          type: string
+        nqfLevel:
+          type: integer
+        facultyName:
+          type: string
+        departmentName:
+          type: string
+        qualificationTitle:
+          type: string
+        registrationDate:
+          type: string
+          description: Date in ISO 8601 format (YYYY-MM-DD)
+        courses:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Course'
+    Programme:
+      allOf:
+        - $ref: '#/components/schemas/ProgrammeInput'
+    Course:
+      type: object
+      required:
+        - courseName
+        - courseCode
+        - nqfLevel
+      properties:
+        courseName:
+          type: string
+        courseCode:
+          type: string
+        nqfLevel:
+          type: integer
